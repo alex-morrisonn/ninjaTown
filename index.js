@@ -4,7 +4,50 @@ const c = canvas.getContext("2d");
 // Set canvas width and height
 canvas.width = 1920;
 canvas.height = 1080;
-c.fillRect(0, 0, canvas.width, canvas.height);
+
+// Load the collisions map
+const collisionsMap = [];
+for (let i = 0; i < collisions.length; i += 160) {
+  collisionsMap.push(collisions.slice(i, 160 + i));
+}
+
+// Boundary class creation
+class Boundary {
+  static width = 88;
+  static height = 88;
+  constructor({ position }) {
+    this.position = position;
+    this.width = 88;
+    this.height = 88;
+  }
+
+  // Draw the boundary on the canvas
+  draw() {
+    c.fillStyle = "red";
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+  }
+}
+
+const boundaries = []; // Create an array to store the boundaries
+const offset = {
+  x: 0,
+  y: -800,
+};
+
+// Create boundaries based on the collisions map
+collisionsMap.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 2316)
+      boundaries.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
 
 // Load images
 const image = new Image();
@@ -30,8 +73,8 @@ class Sprite {
 // Create a new Sprite object
 const background = new Sprite({
   position: {
-    x: 0,
-    y: -800,
+    x: offset.x,
+    y: offset.y,
   },
   image: image,
 });
@@ -48,6 +91,7 @@ const keys = {
 function animate() {
   requestAnimationFrame(animate); // Call the function recursively
   background.draw();
+  boundaries.forEach((boundary) => boundary.draw());
   c.drawImage(
     playerImage,
     0,
