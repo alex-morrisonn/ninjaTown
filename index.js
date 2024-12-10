@@ -14,7 +14,7 @@ for (let i = 0; i < collisions.length; i += 160) {
 const boundaries = []; // Create an array to store the boundaries
 const offset = {
   x: 0,
-  y: -850,
+  y: -900,
 };
 
 // Create boundaries based on the collisions map
@@ -40,18 +40,15 @@ const foregroundImage = new Image();
 foregroundImage.src = "./maps/foregroundObjectsOutdoor.png";
 
 const playerImage = new Image();
-playerImage.src = "./img/playerDown.png";
-
-const scaleFactor = 1.4; // Adjust this value to scale the sprite
+playerImage.src = "./img/walk.png";
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - (192 / 4) * scaleFactor,
-    y: canvas.height / 2 - (68 / 4) * scaleFactor,
+    x: canvas.width / 2 - (352 / 4),
+    y: canvas.height / 2 - (352 / 4),
   },
   image: playerImage,
   frames: { max: 4 },
-  scale: scaleFactor,
 });
 
 // Create a new Sprite object
@@ -61,7 +58,6 @@ const background = new Sprite({
     y: offset.y,
   },
   image: image,
-  scale: 1, // No scaling for the background
 });
 
 const foreground = new Sprite({
@@ -70,7 +66,6 @@ const foreground = new Sprite({
     y: offset.y,
   },
   image: foregroundImage,
-  scale: 1, // No scaling for the foregorund
 });
 
 // Set a default of false for each key

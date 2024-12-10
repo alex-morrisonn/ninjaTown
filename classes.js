@@ -8,7 +8,7 @@ class Sprite {
 
     this.image.onload = () => {
       this.width = (this.image.width / this.frames.max) * this.scale;
-      this.height = this.image.height * this.scale;
+      this.height = (this.image.height / this.frames.max) * this.scale;
     };
   }
 
@@ -19,11 +19,11 @@ class Sprite {
       0,
       0,
       this.image.width / this.frames.max,
-      this.image.height,
+      this.image.height / this.frames.max,
       this.position.x,
       this.position.y,
       (this.image.width / this.frames.max) * this.scale,
-      this.image.height * this.scale
+      (this.image.height / this.frames.max) * this.scale
     );
   }
 }
