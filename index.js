@@ -61,32 +61,37 @@ function animate() {
   );
 
   // Move the background (player movement)
-  if (keys.w) {
+  if (keys.w && lastKey === "w") {
     background.position.y += 3;
-  } else if (keys.a) {
+  } else if (keys.a && lastKey === "a") {
     background.position.x += 3;
-  } else if (keys.s) {
+  } else if (keys.s && lastKey === "s") {
     background.position.y -= 3;
-  } else if (keys.d) {
+  } else if (keys.d && lastKey === "d") {
     background.position.x -= 3;
   }
 }
 animate();
 
 // Event listeners for keydown and keyup
+let lastKey = ""; // Store the last key pressed
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "w":
       keys.w = true;
+      lastKey = "w";
       break;
     case "a":
       keys.a = true;
+      lastKey = "a";
       break;
     case "s":
       keys.s = true;
+      lastKey = "s";
       break;
     case "d":
       keys.d = true;
+      lastKey = "d";
       break;
   }
 });
