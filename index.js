@@ -56,19 +56,43 @@ image.src = "./maps/mainOutdoor.png";
 const playerImage = new Image();
 playerImage.src = "./img/playerDown.png";
 
-const scaleFactor = 1.5;
-
 // Sprite class creation
 class Sprite {
-  constructor({ position, velocity, image }) {
+  constructor({ position, velocity, image, frames = { max: 1 }, scale = 2 }) {
     this.position = position;
     this.image = image;
+    this.frames = frames;
+
+    this.image.onload = () => {
+      this.width = this.image.width / this.frames.max;
+      this.height = this.image.height / this.frames.max;
+    };
   }
+
   // Draw the image on the canvas
   draw() {
-    c.drawImage(this.image, this.position.x, this.position.y);
+    c.drawImage(
+      this.image,
+      0,
+      0,
+      this.image.width / this.frames.max,
+      this.image.height,
+      this.position.x,
+      this.position.y,
+      this.image.width / this.frames.max,
+      this.image.height
+    );
   }
 }
+
+const player = new Sprite({
+  position: {
+    x: canvas.width / 2 - 192 / 4,
+    y: canvas.height / 2 - 68 / 4,
+  },
+  image: playerImage,
+  frames: { max: 4 },
+});
 
 // Create a new Sprite object
 const background = new Sprite({
@@ -87,32 +111,51 @@ const keys = {
   d: false,
 };
 
+const movables = [background, ...boundaries];
+
+function rectangularCollision({ rect1, rect2 }) {
+  return (
+    rect1.position.x + rect1.width >= rect2.position.x &&
+    rect1.position.x <= rect2.position.x + rect2.width &&
+    rect1.position.y <= rect2.position.y + rect2.height &&
+    rect1.position.y + rect1.height >= rect2.position.y
+  );
+}
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate); // Call the function recursively
   background.draw();
-  boundaries.forEach((boundary) => boundary.draw());
-  c.drawImage(
-    playerImage,
-    0,
-    0,
-    playerImage.width / 4, // Divide width by 4 (4 frames)
-    playerImage.height,
-    canvas.width / 2 - playerImage.width / 4,
-    canvas.height / 2 - playerImage.height / 4,
-    (playerImage.width / 4) * scaleFactor, // Scale image to a larger size
-    playerImage.height * scaleFactor
-  );
+  boundaries.forEach((boundary) => {
+    boundary.draw();
+    if (
+      rectangularCollision({
+        rect1: player,
+        rect2: boundary,
+      })
+    ) {
+      console.log("Collision");
+    }
+  });
+  player.draw();
 
-  // Move the background (player movement)
   if (keys.w && lastKey === "w") {
-    background.position.y += 3;
+    // Move the background (player movement)
+    movables.forEach((movable) => {
+      movable.position.y += 3;
+    });
   } else if (keys.a && lastKey === "a") {
-    background.position.x += 3;
+    movables.forEach((movable) => {
+      movable.position.x += 3;
+    });
   } else if (keys.s && lastKey === "s") {
-    background.position.y -= 3;
+    movables.forEach((movable) => {
+      movable.position.y -= 3;
+    });
   } else if (keys.d && lastKey === "d") {
-    background.position.x -= 3;
+    movables.forEach((movable) => {
+      movable.position.x -= 3;
+    });
   }
 }
 animate();
