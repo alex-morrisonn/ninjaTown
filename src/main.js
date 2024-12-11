@@ -11,9 +11,9 @@ const c = canvas.getContext("2d");
 canvas.width = 1920;
 canvas.height = 1080;
 
-const offset = { x: 0, y: -900 };
+const offset = { x: -1400, y: -650 };
 
-const mapWidth = 160;
+const mapWidth = 100;
 const boundaries = createBoundaries(collisions, mapWidth, offset);
 const entryZones = createEntryZones(entryZonesData, mapWidth, offset);
 
@@ -29,16 +29,16 @@ const foreground = createForeground(offset);
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - 88,
-    y: canvas.height / 2 - 88,
+    x: canvas.width / 2 - 48,
+    y: canvas.height / 2 - 48,
   },
   image: new Image(),
   frames: { max: 4 },
   sprites: {
-    up: { x: 88, y: 0 },
+    up: { x: 48, y: 0 },
     down: { x: 0, y: 0 },
-    left: { x: 176, y: 0 },
-    right: { x: 264, y: 0 },
+    left: { x: 96, y: 0 },
+    right: { x: 144, y: 0 },
   },
 });
 player.image.src = "./img/mainCharWalk.png";

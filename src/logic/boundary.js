@@ -1,6 +1,6 @@
 export class Boundary {
-  static width = 88; // Default boundary width
-  static height = 88; // Default boundary height
+  static width = 64; // Default boundary width
+  static height = 64; // Default boundary height
 
   constructor({ position }) {
     // Initialize boundary with position and dimensions

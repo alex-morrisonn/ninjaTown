@@ -31,10 +31,10 @@ export function handlePlayerMovement(
 ) {
   // Define movement deltas and corresponding sprites for each key
   const movement = {
-    w: { deltaX: 0, deltaY: -3, sprite: player.sprites.up },
-    a: { deltaX: -3, deltaY: 0, sprite: player.sprites.left },
-    s: { deltaX: 0, deltaY: 3, sprite: player.sprites.down },
-    d: { deltaX: 3, deltaY: 0, sprite: player.sprites.right },
+    w: { deltaX: 0, deltaY: -2, sprite: player.sprites.up },
+    a: { deltaX: -2, deltaY: 0, sprite: player.sprites.left },
+    s: { deltaX: 0, deltaY: 2, sprite: player.sprites.down },
+    d: { deltaX: 2, deltaY: 0, sprite: player.sprites.right },
   };
 
   let moved = false; // Track whether any movement occurred
