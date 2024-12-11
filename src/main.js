@@ -1,43 +1,39 @@
-import { createBackgrounds } from "./backgrounds.js";
-import { setupInputHandlers, handlePlayerMovement } from "./input.js";
-import { Sprite } from "./sprites.js";
-import { createBoundaries, createEntryZones } from "./boundary.js";
+import { preloadBackgrounds, createBackground, preloadForegrounds, createForeground } from "./assets/backgrounds.js";
+import { updateBackground } from "./assets/interior.js";
+import { setupInputHandlers, handlePlayerMovement } from "./logic/input.js";
+import { createBoundaries, createEntryZones } from "./logic/boundary.js";
+import { Sprite } from "./assets/sprites.js"; // Import the Sprite class
 import collisions from "../data/collisionsMainOutdoor.js";
 import entryZonesData from "../data/entryZones.js";
 
-const canvas = document.querySelector("canvas"); // Select the canvas element
-const c = canvas.getContext("2d"); // Get the 2D rendering context for drawing
-
-// Set canvas dimensions to match the desired resolution
+const canvas = document.querySelector("canvas");
+const c = canvas.getContext("2d");
 canvas.width = 1920;
 canvas.height = 1080;
 
-const offset = { x: 0, y: -900 }; // Offset for map positioning
+const offset = { x: 0, y: -900 };
 
-// Create boundaries for obstacles and entry zones for special areas
-const mapWidth = 160; // Width of the map in grid units
+const mapWidth = 160;
 const boundaries = createBoundaries(collisions, mapWidth, offset);
 const entryZones = createEntryZones(entryZonesData, mapWidth, offset);
 
-// Load background images and prepare the initial environment
-const entry = { initiated: false }; // Track if the entry zone is activated
-const { background, foreground, updateBackground } = createBackgrounds(
-  offset,
-  entry
-);
+const entry = { initiated: false };
 
-// Load player sprite
-const playerImage = new Image();
-playerImage.src = "./img/walk.png";
+// Preload background and foreground images
+const backgroundImages = preloadBackgrounds();
+const foregroundImages = preloadForegrounds();
 
-// Initialize the player sprite with position and animations
+// Create background and foreground sprites
+const background = createBackground(offset);
+const foreground = createForeground(offset);
+
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - 88, // Center the player on the canvas
+    x: canvas.width / 2 - 88,
     y: canvas.height / 2 - 88,
   },
-  image: playerImage,
-  frames: { max: 4 }, // Maximum frames for animation
+  image: new Image(),
+  frames: { max: 4 },
   sprites: {
     up: { x: 88, y: 0 },
     down: { x: 0, y: 0 },
@@ -45,23 +41,24 @@ const player = new Sprite({
     right: { x: 264, y: 0 },
   },
 });
+player.image.src = "./img/mainCharWalk.png";
 
-// List of all objects that move with the player (parallax effect)
-const movables = [background, foreground, ...boundaries, ...entryZones];
+const movables = [background, ...boundaries, ...entryZones, foreground];
 
 function animate() {
-  // Recursive function to create an animation loop
   requestAnimationFrame(animate);
-  c.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas for redrawing
+  c.clearRect(0, 0, canvas.width, canvas.height);
 
-  updateBackground(); // Update the background image if necessary
+  updateBackground(entry, background, backgroundImages); // Update background based on entry state
+  handlePlayerMovement(player, movables, boundaries, entryZones, entry);
 
-  handlePlayerMovement(player, movables, boundaries, entryZones, entry); // Process player movement
-
-  // Draw all movable objects (background, obstacles, etc.)
-  movables.forEach((movable) => movable.draw(c));
-  player.draw(c); // Draw the player sprite
+  background.draw(c); // Draw background
+  movables.forEach((movable) => {
+    if (movable !== foreground) movable.draw(c); // Draw everything except the foreground
+  });
+  player.draw(c); // Draw player
+  foreground.draw(c); // Draw foreground on top
 }
 
-animate(); // Start the animation loop
-setupInputHandlers(); // Set up keyboard input listeners
+animate();
+setupInputHandlers();
