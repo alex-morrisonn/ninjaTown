@@ -1,11 +1,23 @@
-<style>
-  body {
-    background-color: black;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    canvas {
+      display: block; /* Remove any gaps around the canvas */
+    }
+  </style>
+</head>
+<body>
+  <canvas></canvas>
 
-<canvas></canvas>
-<script src="data/entryZones.js"></script>
-<script src="data/collisionsMainOutdoor.js"></script>
-<script src="classes.js"></script>
-<script src="index.js"></script>
+  <!-- JavaScript Modules -->
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
