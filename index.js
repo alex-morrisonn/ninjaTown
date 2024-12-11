@@ -14,7 +14,7 @@ for (let i = 0; i < collisions.length; i += 160) {
 const boundaries = []; // Create an array to store the boundaries
 const offset = {
   x: 0,
-  y: -850,
+  y: -900,
 };
 
 // Create boundaries based on the collisions map
@@ -40,18 +40,21 @@ const foregroundImage = new Image();
 foregroundImage.src = "./maps/foregroundObjectsOutdoor.png";
 
 const playerImage = new Image();
-playerImage.src = "./img/playerDown.png";
-
-const scaleFactor = 1.4; // Adjust this value to scale the sprite
+playerImage.src = "./img/walk.png";
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - (192 / 4) * scaleFactor,
-    y: canvas.height / 2 - (68 / 4) * scaleFactor,
+    x: canvas.width / 2 - 88,
+    y: canvas.height / 2 - 88,
   },
   image: playerImage,
   frames: { max: 4 },
-  scale: scaleFactor,
+  sprites: {
+    up: { x: 88, y: 0 }, // 2nd quarter (pixels 88-176)
+    down: { x: 0, y: 0 }, // 1st quarter (pixels 0-88)
+    left: { x: 176, y: 0 }, // 3rd quarter (pixels 176-264)
+    right: { x: 264, y: 0 }, // 4th quarter (pixels 264-352)
+  },
 });
 
 // Create a new Sprite object
@@ -61,7 +64,6 @@ const background = new Sprite({
     y: offset.y,
   },
   image: image,
-  scale: 1, // No scaling for the background
 });
 
 const foreground = new Sprite({
@@ -70,7 +72,6 @@ const foreground = new Sprite({
     y: offset.y,
   },
   image: foregroundImage,
-  scale: 1, // No scaling for the foregorund
 });
 
 // Set a default of false for each key
@@ -95,6 +96,8 @@ function rectangularCollision({ rect1, rect2 }) {
 // Animation loop
 function animate() {
   requestAnimationFrame(animate); // Call the function recursively
+  c.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
   background.draw();
   boundaries.forEach((boundary) => {
     boundary.draw();
@@ -105,7 +108,10 @@ function animate() {
   let moving = true;
 
   // Move the background (player movement)
+  player.moving = false;
   if (keys.w && lastKey === "w") {
+    player.moving = true;
+    player.currentSprite = player.sprites.up;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -128,6 +134,8 @@ function animate() {
         movable.position.y += 3;
       });
   } else if (keys.a && lastKey === "a") {
+    player.moving = true;
+    player.currentSprite = player.sprites.left;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -150,6 +158,8 @@ function animate() {
         movable.position.x += 3;
       });
   } else if (keys.s && lastKey === "s") {
+    player.moving = true;
+    player.currentSprite = player.sprites.down;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -172,6 +182,8 @@ function animate() {
         movable.position.y -= 3;
       });
   } else if (keys.d && lastKey === "d") {
+    player.moving = true;
+    player.currentSprite = player.sprites.right;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -195,6 +207,7 @@ function animate() {
       });
   }
 }
+
 animate();
 
 // Event listeners for keydown and keyup
