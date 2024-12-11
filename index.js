@@ -1,9 +1,11 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
+// Set canvas width and height
 canvas.width = 1920;
 canvas.height = 1080;
 
+// Load the collisions map
 const collisionsMap = [];
 for (let i = 0; i < collisions.length; i += 160) {
   collisionsMap.push(collisions.slice(i, 160 + i));
@@ -14,12 +16,13 @@ for (let i = 0; i < entryZonesData.length; i += 160) {
   entryZonesMap.push(entryZonesData.slice(i, 160 + i));
 }
 
-const boundaries = [];
+const boundaries = []; // Create an array to store the boundaries
 const offset = {
   x: 0,
   y: -900,
 };
 
+// Create boundaries based on the collisions map
 collisionsMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     if (symbol === 2316)
@@ -35,7 +38,6 @@ collisionsMap.forEach((row, i) => {
 });
 
 const entryZones = [];
-
 entryZonesMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     if (symbol === 2312)
@@ -50,10 +52,12 @@ entryZonesMap.forEach((row, i) => {
   });
 });
 
-console.log(entryZones);
-
+// Load images
 const image = new Image();
 image.src = "./maps/mainOutdoor.png";
+
+const newBackgroundImage = new Image();
+newBackgroundImage.src = "./maps/outdoorNew.png";
 
 const foregroundImage = new Image();
 foregroundImage.src = "./maps/foregroundObjectsOutdoor.png";
@@ -92,6 +96,7 @@ const foreground = new Sprite({
   image: foregroundImage,
 });
 
+// Set a default of false for each key
 const keys = {
   w: false,
   a: false,
@@ -110,9 +115,17 @@ function rectangularCollision({ rect1, rect2 }) {
   );
 }
 
+const entry = { initiated: false };
+
+// Animation loop
 function animate() {
-  requestAnimationFrame(animate);
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  requestAnimationFrame(animate); // Call the function recursively
+  c.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+  // Change background image if entry is initiated
+  if (entry.initiated) {
+    background.image = newBackgroundImage;
+  }
 
   background.draw();
   boundaries.forEach((boundary) => {
@@ -126,12 +139,12 @@ function animate() {
 
   let moving = true;
 
+  // Move the background (player movement)
   player.moving = false;
   if (keys.w && lastKey === "w") {
     player.moving = true;
     player.currentSprite = player.sprites.up;
     moving = true;
-
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
       if (
@@ -160,7 +173,7 @@ function animate() {
         })
       ) {
         moving = false;
-        console.log("entry zone");
+        entry.initiated = true;
         break;
       }
     }
@@ -201,7 +214,7 @@ function animate() {
         })
       ) {
         moving = false;
-        console.log("entry zone");
+        entry.initiated = true;
         break;
       }
     }
@@ -242,7 +255,7 @@ function animate() {
         })
       ) {
         moving = false;
-        console.log("entry zone");
+        entry.initiated = true;
         break;
       }
     }
@@ -283,7 +296,7 @@ function animate() {
         })
       ) {
         moving = false;
-        console.log("entry zone");
+        entry.initiated = true;
         break;
       }
     }
