@@ -39,33 +39,23 @@ image.src = "./maps/mainOutdoor.png";
 const foregroundImage = new Image();
 foregroundImage.src = "./maps/foregroundObjectsOutdoor.png";
 
-const playerDownImage = new Image();
-playerDownImage.src = "./img/playerDown.png";
-
-const playerUpImage = new Image();
-playerUpImage.src = "./img/playerUp.png";
-
-const playerLeftImage = new Image();
-playerLeftImage.src = "./img/playerLeft.png";
-
-const playerRightImage = new Image();
-playerRightImage.src = "./img/playerRight.png";
+const playerImage = new Image();
+playerImage.src = "./img/walk.png";
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - 352 / 4,
-    y: canvas.height / 2 - 352 / 4,
+    x: canvas.width / 2 - 88,
+    y: canvas.height / 2 - 88,
   },
-  image: playerDownImage,
+  image: playerImage,
   frames: { max: 4 },
   sprites: {
-    up: playerUpImage,
-    down: playerDownImage,
-    left: playerLeftImage,
-    right: playerRightImage,
+    up: { x: 88, y: 0 }, // 2nd quarter (pixels 88-176)
+    down: { x: 0, y: 0 }, // 1st quarter (pixels 0-88)
+    left: { x: 176, y: 0 }, // 3rd quarter (pixels 176-264)
+    right: { x: 264, y: 0 }, // 4th quarter (pixels 264-352)
   },
 });
-console.log(player);
 
 // Create a new Sprite object
 const background = new Sprite({
@@ -106,6 +96,8 @@ function rectangularCollision({ rect1, rect2 }) {
 // Animation loop
 function animate() {
   requestAnimationFrame(animate); // Call the function recursively
+  c.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
   background.draw();
   boundaries.forEach((boundary) => {
     boundary.draw();
@@ -119,7 +111,7 @@ function animate() {
   player.moving = false;
   if (keys.w && lastKey === "w") {
     player.moving = true;
-    player.image = player.sprites.up;
+    player.currentSprite = player.sprites.up;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -143,7 +135,7 @@ function animate() {
       });
   } else if (keys.a && lastKey === "a") {
     player.moving = true;
-    player.image = player.sprites.left;
+    player.currentSprite = player.sprites.left;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -167,7 +159,7 @@ function animate() {
       });
   } else if (keys.s && lastKey === "s") {
     player.moving = true;
-    player.image = player.sprites.down;
+    player.currentSprite = player.sprites.down;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -191,7 +183,7 @@ function animate() {
       });
   } else if (keys.d && lastKey === "d") {
     player.moving = true;
-    player.image = player.sprites.right;
+    player.currentSprite = player.sprites.right;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -215,6 +207,7 @@ function animate() {
       });
   }
 }
+
 animate();
 
 // Event listeners for keydown and keyup

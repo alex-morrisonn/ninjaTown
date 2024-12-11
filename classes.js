@@ -10,31 +10,32 @@ class Sprite {
     };
     this.moving = false;
     this.sprites = sprites;
+    this.currentSprite = { x: 0, y: 0 };
   }
 
   draw() {
     c.drawImage(
       this.image,
-      0,
-      this.frames.val * this.height,
-      this.image.width,
-      this.image.height / this.frames.max,
+      this.currentSprite.x,
+      this.currentSprite.y + this.frames.val * this.height,
+      this.width,
+      this.height,
       this.position.x,
       this.position.y,
-      this.image.width,
-      this.image.height / this.frames.max
+      this.width,
+      this.height
     );
-
+  
     if (!this.moving) return;
-
+  
     if (this.frames.max > 1) {
       this.frames.elapsed++;
     }
-    if (this.frames.elapsed % 40 === 0) {
-      if (this.frames.val < this.frames.max - 1) this.frames.val++;
-      else this.frames.val = 0;
+    if (this.frames.elapsed % 35 === 0) {
+      this.frames.val = (this.frames.val + 1) % this.frames.max;
     }
   }
+  
 }
 
 class Boundary {
