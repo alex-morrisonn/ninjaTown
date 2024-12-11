@@ -1,5 +1,10 @@
-import { preloadBackgrounds, createBackground, preloadForegrounds, createForeground } from "./assets/backgrounds.js";
-import { updateBackground } from "./assets/interior.js";
+import {
+  preloadBackgrounds,
+  createBackground,
+  preloadForegrounds,
+  createForeground,
+} from "./assets/backgrounds.js";
+import { updateBackground } from "./assets/interiorDoubleDoorRedRoof.js";
 import { setupInputHandlers, handlePlayerMovement } from "./logic/input.js";
 import { createBoundaries, createEntryZones } from "./logic/boundary.js";
 import { Sprite } from "./assets/sprites.js"; // Import the Sprite class
@@ -49,15 +54,18 @@ function animate() {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
 
-  updateBackground(entry, background, backgroundImages); // Update background based on entry state
+  // Update background and handle player movement
+  updateBackground(entry, background, backgroundImages, player, canvas);
   handlePlayerMovement(player, movables, boundaries, entryZones, entry);
 
-  background.draw(c); // Draw background
+  background.draw(c); // Draw background first
   movables.forEach((movable) => {
-    if (movable !== foreground) movable.draw(c); // Draw everything except the foreground
+    if (movable !== foreground) movable.draw(c); // Draw other elements except the foreground
   });
   player.draw(c); // Draw player
-  foreground.draw(c); // Draw foreground on top
+  if (!entry.initiated) {
+    foreground.draw(c); // Draw foreground only for the outdoor scene
+  }
 }
 
 animate();

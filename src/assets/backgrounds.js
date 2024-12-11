@@ -2,11 +2,12 @@ import { Sprite } from "./sprites.js";
 
 const backgroundImages = {
   mainOutdoor: new Image(),
-  outdoorNew: new Image(),
+  interiorDoubleDoorRedRoof: new Image(),
 };
 
 backgroundImages.mainOutdoor.src = "./maps/backgroundMainOutdoor.png";
-backgroundImages.outdoorNew.src = "./maps/interiorStrawHouse.png";
+backgroundImages.interiorDoubleDoorRedRoof.src =
+  "./maps/interiorDoubleDoorRedRoof.png";
 
 const foregroundImages = {
   outdoor: new Image(),
