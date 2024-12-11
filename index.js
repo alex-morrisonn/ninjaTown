@@ -1,23 +1,25 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
-// Set canvas width and height
 canvas.width = 1920;
 canvas.height = 1080;
 
-// Load the collisions map
 const collisionsMap = [];
 for (let i = 0; i < collisions.length; i += 160) {
   collisionsMap.push(collisions.slice(i, 160 + i));
 }
 
-const boundaries = []; // Create an array to store the boundaries
+const entryZonesMap = [];
+for (let i = 0; i < entryZonesData.length; i += 160) {
+  entryZonesMap.push(entryZonesData.slice(i, 160 + i));
+}
+
+const boundaries = [];
 const offset = {
   x: 0,
   y: -900,
 };
 
-// Create boundaries based on the collisions map
 collisionsMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     if (symbol === 2316)
@@ -32,7 +34,24 @@ collisionsMap.forEach((row, i) => {
   });
 });
 
-// Load images
+const entryZones = [];
+
+entryZonesMap.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 2312)
+      entryZones.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
+
+console.log(entryZones);
+
 const image = new Image();
 image.src = "./maps/mainOutdoor.png";
 
@@ -57,7 +76,6 @@ const player = new Sprite({
   },
 });
 
-// Create a new Sprite object
 const background = new Sprite({
   position: {
     x: offset.x,
@@ -74,7 +92,6 @@ const foreground = new Sprite({
   image: foregroundImage,
 });
 
-// Set a default of false for each key
 const keys = {
   w: false,
   a: false,
@@ -82,7 +99,7 @@ const keys = {
   d: false,
 };
 
-const movables = [background, ...boundaries, foreground];
+const movables = [background, ...boundaries, foreground, ...entryZones];
 
 function rectangularCollision({ rect1, rect2 }) {
   return (
@@ -93,26 +110,28 @@ function rectangularCollision({ rect1, rect2 }) {
   );
 }
 
-// Animation loop
 function animate() {
-  requestAnimationFrame(animate); // Call the function recursively
-  c.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+  requestAnimationFrame(animate);
+  c.clearRect(0, 0, canvas.width, canvas.height);
 
   background.draw();
   boundaries.forEach((boundary) => {
     boundary.draw();
+  });
+  entryZones.forEach((entryZone) => {
+    entryZone.draw();
   });
   player.draw();
   foreground.draw();
 
   let moving = true;
 
-  // Move the background (player movement)
   player.moving = false;
   if (keys.w && lastKey === "w") {
     player.moving = true;
     player.currentSprite = player.sprites.up;
     moving = true;
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
       if (
@@ -125,6 +144,23 @@ function animate() {
         })
       ) {
         moving = false;
+        break;
+      }
+    }
+
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x, y: player.position.y - 3 },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        console.log("entry zone");
         break;
       }
     }
@@ -153,6 +189,23 @@ function animate() {
       }
     }
 
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x - 3, y: player.position.y },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        console.log("entry zone");
+        break;
+      }
+    }
+
     if (moving)
       movables.forEach((movable) => {
         movable.position.x += 3;
@@ -173,6 +226,23 @@ function animate() {
         })
       ) {
         moving = false;
+        break;
+      }
+    }
+
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x, y: player.position.y + 3 },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        console.log("entry zone");
         break;
       }
     }
@@ -201,6 +271,23 @@ function animate() {
       }
     }
 
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x + 3, y: player.position.y },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        console.log("entry zone");
+        break;
+      }
+    }
+
     if (moving)
       movables.forEach((movable) => {
         movable.position.x -= 3;
@@ -210,8 +297,7 @@ function animate() {
 
 animate();
 
-// Event listeners for keydown and keyup
-let lastKey = ""; // Store the last key pressed
+let lastKey = "";
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "w":
