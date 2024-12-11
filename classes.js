@@ -1,34 +1,42 @@
-// Sprite class creation
 class Sprite {
-  constructor({ position, velocity, image, frames = { max: 1 }, scale = 1 }) {
+  constructor({ position, velocity, image, frames = { max: 1 }, sprites }) {
     this.position = position;
     this.image = image;
-    this.frames = frames;
-    this.scale = scale;
+    this.frames = { ...frames, val: 0, elapsed: 0 };
 
     this.image.onload = () => {
-      this.width = (this.image.width / this.frames.max) * this.scale;
-      this.height = (this.image.height / this.frames.max) * this.scale;
+      this.width = this.image.width / this.frames.max;
+      this.height = this.image.height / this.frames.max;
     };
+    this.moving = false;
+    this.sprites = sprites;
   }
 
-  // Draw the image on the canvas
   draw() {
     c.drawImage(
       this.image,
       0,
-      0,
-      this.image.width / this.frames.max,
+      this.frames.val * this.height,
+      this.image.width,
       this.image.height / this.frames.max,
       this.position.x,
       this.position.y,
-      (this.image.width / this.frames.max) * this.scale,
-      (this.image.height / this.frames.max) * this.scale
+      this.image.width,
+      this.image.height / this.frames.max
     );
+
+    if (!this.moving) return;
+
+    if (this.frames.max > 1) {
+      this.frames.elapsed++;
+    }
+    if (this.frames.elapsed % 40 === 0) {
+      if (this.frames.val < this.frames.max - 1) this.frames.val++;
+      else this.frames.val = 0;
+    }
   }
 }
 
-// Boundary class creation
 class Boundary {
   static width = 88;
   static height = 88;
@@ -38,7 +46,6 @@ class Boundary {
     this.height = 88;
   }
 
-  // Draw the boundary on the canvas
   draw() {
     c.fillStyle = "rgba(255,0,0,0)";
     c.fillRect(this.position.x, this.position.y, this.width, this.height);

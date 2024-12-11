@@ -39,17 +39,33 @@ image.src = "./maps/mainOutdoor.png";
 const foregroundImage = new Image();
 foregroundImage.src = "./maps/foregroundObjectsOutdoor.png";
 
-const playerImage = new Image();
-playerImage.src = "./img/walk.png";
+const playerDownImage = new Image();
+playerDownImage.src = "./img/playerDown.png";
+
+const playerUpImage = new Image();
+playerUpImage.src = "./img/playerUp.png";
+
+const playerLeftImage = new Image();
+playerLeftImage.src = "./img/playerLeft.png";
+
+const playerRightImage = new Image();
+playerRightImage.src = "./img/playerRight.png";
 
 const player = new Sprite({
   position: {
-    x: canvas.width / 2 - (352 / 4),
-    y: canvas.height / 2 - (352 / 4),
+    x: canvas.width / 2 - 352 / 4,
+    y: canvas.height / 2 - 352 / 4,
   },
-  image: playerImage,
+  image: playerDownImage,
   frames: { max: 4 },
+  sprites: {
+    up: playerUpImage,
+    down: playerDownImage,
+    left: playerLeftImage,
+    right: playerRightImage,
+  },
 });
+console.log(player);
 
 // Create a new Sprite object
 const background = new Sprite({
@@ -100,7 +116,10 @@ function animate() {
   let moving = true;
 
   // Move the background (player movement)
+  player.moving = false;
   if (keys.w && lastKey === "w") {
+    player.moving = true;
+    player.image = player.sprites.up;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -123,6 +142,8 @@ function animate() {
         movable.position.y += 3;
       });
   } else if (keys.a && lastKey === "a") {
+    player.moving = true;
+    player.image = player.sprites.left;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -145,6 +166,8 @@ function animate() {
         movable.position.x += 3;
       });
   } else if (keys.s && lastKey === "s") {
+    player.moving = true;
+    player.image = player.sprites.down;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
@@ -167,6 +190,8 @@ function animate() {
         movable.position.y -= 3;
       });
   } else if (keys.d && lastKey === "d") {
+    player.moving = true;
+    player.image = player.sprites.right;
     moving = true;
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i];
