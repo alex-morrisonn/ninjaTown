@@ -11,6 +11,11 @@ for (let i = 0; i < collisions.length; i += 160) {
   collisionsMap.push(collisions.slice(i, 160 + i));
 }
 
+const entryZonesMap = [];
+for (let i = 0; i < entryZonesData.length; i += 160) {
+  entryZonesMap.push(entryZonesData.slice(i, 160 + i));
+}
+
 const boundaries = []; // Create an array to store the boundaries
 const offset = {
   x: 0,
@@ -32,9 +37,27 @@ collisionsMap.forEach((row, i) => {
   });
 });
 
+const entryZones = [];
+entryZonesMap.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 2312)
+      entryZones.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y,
+          },
+        })
+      );
+  });
+});
+
 // Load images
 const image = new Image();
 image.src = "./maps/mainOutdoor.png";
+
+const newBackgroundImage = new Image();
+newBackgroundImage.src = "./maps/outdoorNew.png";
 
 const foregroundImage = new Image();
 foregroundImage.src = "./maps/foregroundObjectsOutdoor.png";
@@ -57,7 +80,6 @@ const player = new Sprite({
   },
 });
 
-// Create a new Sprite object
 const background = new Sprite({
   position: {
     x: offset.x,
@@ -82,7 +104,7 @@ const keys = {
   d: false,
 };
 
-const movables = [background, ...boundaries, foreground];
+const movables = [background, ...boundaries, foreground, ...entryZones];
 
 function rectangularCollision({ rect1, rect2 }) {
   return (
@@ -93,14 +115,24 @@ function rectangularCollision({ rect1, rect2 }) {
   );
 }
 
+const entry = { initiated: false };
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate); // Call the function recursively
   c.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
+  // Change background image if entry is initiated
+  if (entry.initiated) {
+    background.image = newBackgroundImage;
+  }
+
   background.draw();
   boundaries.forEach((boundary) => {
     boundary.draw();
+  });
+  entryZones.forEach((entryZone) => {
+    entryZone.draw();
   });
   player.draw();
   foreground.draw();
@@ -129,6 +161,23 @@ function animate() {
       }
     }
 
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x, y: player.position.y - 3 },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        entry.initiated = true;
+        break;
+      }
+    }
+
     if (moving)
       movables.forEach((movable) => {
         movable.position.y += 3;
@@ -149,6 +198,23 @@ function animate() {
         })
       ) {
         moving = false;
+        break;
+      }
+    }
+
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x - 3, y: player.position.y },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        entry.initiated = true;
         break;
       }
     }
@@ -177,6 +243,23 @@ function animate() {
       }
     }
 
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x, y: player.position.y + 3 },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        entry.initiated = true;
+        break;
+      }
+    }
+
     if (moving)
       movables.forEach((movable) => {
         movable.position.y -= 3;
@@ -201,6 +284,23 @@ function animate() {
       }
     }
 
+    for (let i = 0; i < entryZones.length; i++) {
+      const entryZone = entryZones[i];
+      if (
+        rectangularCollision({
+          rect1: {
+            ...player,
+            position: { x: player.position.x + 3, y: player.position.y },
+          },
+          rect2: entryZone,
+        })
+      ) {
+        moving = false;
+        entry.initiated = true;
+        break;
+      }
+    }
+
     if (moving)
       movables.forEach((movable) => {
         movable.position.x -= 3;
@@ -210,8 +310,7 @@ function animate() {
 
 animate();
 
-// Event listeners for keydown and keyup
-let lastKey = ""; // Store the last key pressed
+let lastKey = "";
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "w":
