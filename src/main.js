@@ -4,21 +4,19 @@ import {
   preloadForegrounds,
   createForeground,
 } from "./assets/backgrounds.js";
-import { updateBackground } from "./assets/interiorDoubleDoorRedRoof.js";
+import { updateBackground, updateForeground } from "./scenes/mainOutdoor.js";
 import { setupInputHandlers, handlePlayerMovement } from "./logic/input.js";
-import { createBoundaries, createEntryZones } from "./logic/boundary.js";
-import { Sprite } from "./assets/sprites.js"; // Import the Sprite class
+import { Sprite } from "./assets/sprites.js";
+import { offset, mapWidth } from "./scenes/mainOutdoor.js";
 import collisions from "../data/collisionsMainOutdoor.js";
 import entryZonesData from "../data/entryZones.js";
+import { createBoundaries, createEntryZones } from "./logic/boundary.js";
 
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 canvas.width = 1920;
 canvas.height = 1080;
 
-const offset = { x: -1400, y: -650 };
-
-const mapWidth = 100;
 const boundaries = createBoundaries(collisions, mapWidth, offset);
 const entryZones = createEntryZones(entryZonesData, mapWidth, offset);
 
@@ -48,14 +46,26 @@ const player = new Sprite({
 });
 player.image.src = "./img/mainCharWalk.png";
 
+let activeScene = "mainOutdoor"; // Default to the outdoor scene
 const movables = [background, ...boundaries, ...entryZones, foreground];
+
+function updateScene(background, foreground) {
+  switch (activeScene) {
+    case "mainOutdoor":
+      updateBackground(background, backgroundImages);
+      updateForeground(foreground, foregroundImages);
+      break;
+    case "interiorDoubleDoorRedRoof":
+      updateBackground(background, backgroundImages);
+      break;
+  }
+}
 
 function animate() {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
 
   // Update background and handle player movement
-  updateBackground(entry, background, backgroundImages, player, canvas);
   handlePlayerMovement(player, movables, boundaries, entryZones, entry);
 
   background.draw(c); // Draw background first
@@ -69,4 +79,5 @@ function animate() {
 }
 
 animate();
+updateScene(background, foreground);
 setupInputHandlers();

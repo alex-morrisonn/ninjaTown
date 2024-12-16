@@ -6,8 +6,7 @@ const backgroundImages = {
 };
 
 backgroundImages.mainOutdoor.src = "./maps/backgroundMainOutdoor.png";
-backgroundImages.interiorDoubleDoorRedRoof.src =
-  "./maps/interiorDoubleDoorRedRoof.png";
+backgroundImages.interiorDoubleDoorRedRoof.src = "./maps/interiorDoubleDoorRedRoof.png";
 
 const foregroundImages = {
   outdoor: new Image(),
@@ -28,7 +27,7 @@ export function preloadForegrounds() {
 export function createBackground(offset) {
   // Create background sprite with initial image
   return new Sprite({
-    position: { x: offset.x, y: offset.y },
+    position: { x: 0, y: 0 },
     image: backgroundImages.mainOutdoor, // Default to mainOutdoor
   });
 }
@@ -36,7 +35,7 @@ export function createBackground(offset) {
 export function createForeground(offset) {
   // Create foreground sprite
   return new Sprite({
-    position: { x: offset.x, y: offset.y },
+    position: { x: 0, y: 0 },
     image: foregroundImages.outdoor,
   });
 }
